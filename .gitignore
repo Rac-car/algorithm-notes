@@ -1,0 +1,9 @@
+# MSVC build outputs
+*.exe
+*.obj
+*.ilk
+*.pdb
+vc140.pdb
+
+# If you use a build folder
+build/
