@@ -4,7 +4,7 @@
 #include <sstream>
 using namespace std;
 
-vector<vector<string>> codes;
+vector<vector<string>> codes; // 相邻的<、>一定要用空格隔开！
 vector<int> maxlen;
 
 void print(const string &s, int len)
