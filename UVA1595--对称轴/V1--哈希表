@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <climits> //用来调用INT_MAX、INT_MIN
+#include <utility>
+
+using namespace std;
+
+struct PairHash
+{
+    size_t operator()(const pair<int, int> &p) const
+    {                                                               // 哈希表默认返回值是size_t类型
+        return ((long long)p.first << 32) ^ (unsigned int)p.second; // 如果second是负数，会被变为补码
+    }
+};
+
+int main()
+{
+    ios::sync_with_stdio(0);
+
+    int T;
+    cin >> T;
+
+    while (T--)
+    {
+        int N;
+        cin >> N;
+
+        vector<pair<int, int>> points;
+        unordered_set<pair<int, int>, PairHash> st;
+
+        int minX = INT_MAX, maxX = INT_MIN;
+
+        for (int i = 0; i < N; i++)
+        {
+            int x, y;
+            cin >> x >> y;
+            points.push_back(make_pair(x, y));
+            st.insert(make_pair(x, y));
+            if (x < minX)
+                minX = x;
+            if (x > maxX)
+                maxX = x;
+        }
+
+        int sum = minX + maxX;
+        bool ok = true;
+
+        for (int i = 0; i < N; i++)
+        {
+            int x = points[i].first;
+            int y = points[i].second;
+            if (st.find(make_pair(sum - x, y)) == st.end())
+            { // 找到会返回元素位置，没找到返回.end()
+                ok = false;
+                break;
+            }
+        }
+
+        if (ok)
+            cout << "YES\n";
+        else
+            cout << "NO\n";
+    }
+
+    return 0;
+}
