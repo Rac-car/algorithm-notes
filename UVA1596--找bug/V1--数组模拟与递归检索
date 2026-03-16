@@ -1,0 +1,108 @@
+#include <cstdio>
+#include <map>
+#include <utility>
+using namespace std; // map和pair都在std命名空间里
+
+// m的键表示数组名，值表示数组的信息
+// pair的first表示数组的长度，second表示数组位置与对应值的映射
+map<char, pair<int, map<int, int>>> m;
+
+bool bug = false;
+
+// 递归循环获得下标或数字
+int go()
+{
+    // 先判断是否是数字，若是则无需参与后续下标出错判断
+    int d;
+    if (scanf("%d", &d) == 1)
+    { // 用到了scanf读取数据失败会把读取失败的部分还原的特性，而cin则多了一步处理流异常的步骤
+        return d;
+    }
+    // 读取数组名
+    char ch = getchar();
+    // 读取 [
+    getchar();
+    // 读取下标
+    d = go();
+    // 读取 ]
+    getchar();
+
+    if (bug)
+    {
+        return 0; // 由于出错，因此返回值无关紧要
+    }
+    else
+    {
+        if (d < 0 || d >= m[ch].first || !m[ch].second.count(d))
+        { // 越界或元素未初始化
+            bug = true;
+            return 0;
+        }
+    }
+
+    return m[ch].second[d];
+}
+
+int main()
+{
+    char ch, c;
+    int row;
+    while ((ch = getchar()) != '.')
+    { // 读取的是数组名而不是 .
+        bug = false;
+        row = 0;
+        m.clear();
+        while (true)
+        {
+            row++;
+            getchar();
+            int d = go();
+            if (bug)
+            {                        // 没出错则可能 d 为数字或内部下标未越界
+                printf("%d\n", row); // 输出不需要 &
+                while ((c = getchar()) != '.')
+                    ;
+                getchar(); // 读取换行符
+                break;
+            }
+            getchar();
+
+            // 判断是赋值语句或定义语句
+            if (getchar() == '=')
+            {
+                if (d < 0 || d >= m[ch].first)
+                {
+                    printf("%d\n", row);
+                    while ((c = getchar()) != '.')
+                        ;
+                    getchar(); // 读取换行符
+                    break;
+                }
+                int b = go();
+                if (bug)
+                {
+                    printf("%d\n", row);
+                    while ((c = getchar()) != '.')
+                        ;
+                    getchar(); // 读取换行符
+                    break;
+                }
+                m[ch].second[d] = b;
+                getchar(); // 读取换行符
+            }
+            else
+            {
+                m[ch].first = d; // 定义数组长度
+            }
+
+            // 判断是否结束本轮程序还是读取下一行的数组名
+            if ((ch = getchar()) == '.')
+            {
+                puts("0"); // printf("0\n");
+                getchar();
+                break;
+            }
+        }
+    }
+    return 0;
+}
